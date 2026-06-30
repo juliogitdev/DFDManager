@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/dfd.dart';
 import 'form_screen.dart';
 
@@ -8,6 +9,20 @@ class DetailScreen extends StatelessWidget {
 
   const DetailScreen({super.key, required this.dfd, required this.onChanged});
 
+  void _compartilhar() {
+    final texto = '''
+📄 DFD - Formalização de Demanda
+
+Código: ${dfd.codigo}
+Data da DFD: ${dfd.dataDfd}
+Registrado em: ${dfd.dataCriacao}
+
+Justificativa:
+${dfd.justificativa}
+''';
+    Share.share(texto);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,6 +31,11 @@ class DetailScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF1A237E),
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Compartilhar',
+            onPressed: _compartilhar,
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: 'Editar',
