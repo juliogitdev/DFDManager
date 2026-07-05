@@ -42,7 +42,7 @@ O aplicativo não pretende substituir o sistema oficial, mas sim atuar como uma 
 - Visualização detalhada de uma DFD específica;
 - Edição das informações de uma DFD já cadastrada;
 - Exclusão de registros, com confirmação prévia;
-- Compartilhamento das informações da DFD via aplicativos externos (WhatsApp, e-mail, etc.) utilizando o recurso nativo de compartilhamento do dispositivo;
+- Compartilhamento das informações formatada da DFD via aplicativos (WhatsApp, e-mail, etc.) utilizando o **recurso nativo de compartilhamento do dispositivo**;
 - Persistência local dos dados utilizando **SQLite**, garantindo o funcionamento do app mesmo sem conexão à internet.
 
 ### Funcionalidades fora do escopo atual
