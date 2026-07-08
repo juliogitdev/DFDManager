@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import '../database/database_helper.dart';
 import '../models/dfd.dart';
 import 'detail_screen.dart';
@@ -22,6 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _refresh();
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
   }
 
   void _refresh() {
@@ -62,10 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('DFD Manager'),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -77,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
           if (result == true) _refresh();
         },
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Nova DFD'),
@@ -86,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Barra de busca
           Container(
-            color: const Color(0xFF1A237E),
+            color: AppColors.primary,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: TextField(
               controller: _searchCtrl,
@@ -158,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
                         leading: CircleAvatar(
-                          backgroundColor: const Color(0xFF1A237E),
+                          backgroundColor: AppColors.primary,
                           child: Text(
                             dfd.codigo.length >= 2
                                 ? dfd.codigo.substring(0, 2).toUpperCase()
@@ -175,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 4),
-                            Text('Data DFD: ${dfd.dataDfd}',
+                            Text('Data DFD: ${dfd.dataDfdFormatada}',
                                 style: const TextStyle(fontSize: 12)),
                             const SizedBox(height: 2),
                             Text(
