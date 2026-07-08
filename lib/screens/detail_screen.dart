@@ -1,24 +1,48 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import 'package:share_plus/share_plus.dart';
+import '../database/database_helper.dart';
 import '../models/dfd.dart';
 import 'form_screen.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final Dfd dfd;
   final VoidCallback onChanged;
 
   const DetailScreen({super.key, required this.dfd, required this.onChanged});
 
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  final _db = DatabaseHelper();
+  late Dfd _dfd;
+
+  @override
+  void initState() {
+    super.initState();
+    _dfd = widget.dfd;
+  }
+
+  Future<void> _reloadDfd() async {
+    final all = await _db.getAllDfds();
+    final updated = all.where((d) => d.id == _dfd.id).firstOrNull;
+    if (updated != null && mounted) {
+      setState(() => _dfd = updated);
+    }
+  }
+
   void _compartilhar() {
     final texto = '''
 📄 DFD - Formalização de Demanda
 
-Código: ${dfd.codigo}
-Data da DFD: ${dfd.dataDfd}
-Registrado em: ${dfd.dataCriacao}
+Código: ${_dfd.codigo}
+Data da DFD: ${_dfd.dataDfdFormatada}
+Registrado em: ${_dfd.dataCriacaoFormatada}
 
 Justificativa:
-${dfd.justificativa}
+${_dfd.justificativa}
 ''';
     Share.share(texto);
   }
@@ -27,8 +51,8 @@ ${dfd.justificativa}
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DFD ${dfd.codigo}'),
-        backgroundColor: const Color(0xFF1A237E),
+        title: Text('DFD ${_dfd.codigo}'),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -43,11 +67,11 @@ ${dfd.justificativa}
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => FormScreen(dfd: dfd)),
+                    builder: (_) => FormScreen(dfd: _dfd)),
               );
               if (result == true) {
-                onChanged();
-                Navigator.pop(context, true);
+                widget.onChanged();
+                await _reloadDfd();
               }
             },
           ),
@@ -58,10 +82,10 @@ ${dfd.justificativa}
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _card('Código', dfd.codigo, Icons.tag),
-            _card('Data da DFD', dfd.dataDfd, Icons.description),
-            _card('Registrado no app', dfd.dataCriacao, Icons.today),
-            _card('Justificativa', dfd.justificativa, Icons.notes,
+            _card('Código', _dfd.codigo, Icons.tag),
+            _card('Data da DFD', _dfd.dataDfdFormatada, Icons.description),
+            _card('Registrado no app', _dfd.dataCriacaoFormatada, Icons.today),
+            _card('Justificativa', _dfd.justificativa, Icons.notes,
                 multiline: true),
           ],
         ),
@@ -78,7 +102,7 @@ ${dfd.justificativa}
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
         ],
       ),
@@ -87,7 +111,7 @@ ${dfd.justificativa}
         children: [
           Row(
             children: [
-              Icon(icon, size: 18, color: const Color(0xFF1A237E)),
+              Icon(icon, size: 18, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(label,
                   style: const TextStyle(
