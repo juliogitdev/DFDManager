@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/dfd.dart';
@@ -36,44 +37,73 @@ class DatabaseHelper {
 
   // CREATE
   Future<int> insertDfd(Dfd dfd) async {
-    final db = await database;
-    return db.insert('dfds', dfd.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    try {
+      final db = await database;
+      return db.insert('dfds', dfd.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    } catch (e) {
+      debugPrint('Erro ao inserir DFD: $e');
+      rethrow;
+    }
   }
 
   // READ ALL
   Future<List<Dfd>> getAllDfds() async {
-    final db = await database;
-    final maps = await db.query('dfds', orderBy: 'id DESC');
-    return maps.map((m) => Dfd.fromMap(m)).toList();
+    try {
+      final db = await database;
+      final maps = await db.query('dfds', orderBy: 'id DESC');
+      return maps.map((m) => Dfd.fromMap(m)).toList();
+    } catch (e) {
+      debugPrint('Erro ao listar DFDs: $e');
+      rethrow;
+    }
   }
 
   // READ com busca por código ou justificativa
   Future<List<Dfd>> searchDfds(String query) async {
-    final db = await database;
-    final maps = await db.query(
-      'dfds',
-      where: 'codigo LIKE ? OR justificativa LIKE ?',
-      whereArgs: ['%$query%', '%$query%'],
-      orderBy: 'id DESC',
-    );
-    return maps.map((m) => Dfd.fromMap(m)).toList();
+    try {
+      final db = await database;
+      final escaped = query
+          .replaceAll('\\', '\\\\')
+          .replaceAll('%', '\\%')
+          .replaceAll('_', '\\_');
+      final maps = await db.query(
+        'dfds',
+        where: "codigo LIKE ? ESCAPE '\\' OR justificativa LIKE ? ESCAPE '\\'",
+        whereArgs: ['%$escaped%', '%$escaped%'],
+        orderBy: 'id DESC',
+      );
+      return maps.map((m) => Dfd.fromMap(m)).toList();
+    } catch (e) {
+      debugPrint('Erro ao buscar DFDs: $e');
+      rethrow;
+    }
   }
 
   // UPDATE
   Future<void> updateDfd(Dfd dfd) async {
-    final db = await database;
-    await db.update(
-      'dfds',
-      dfd.toMap(),
-      where: 'id = ?',
-      whereArgs: [dfd.id],
-    );
+    try {
+      final db = await database;
+      await db.update(
+        'dfds',
+        dfd.toMap(),
+        where: 'id = ?',
+        whereArgs: [dfd.id],
+      );
+    } catch (e) {
+      debugPrint('Erro ao atualizar DFD: $e');
+      rethrow;
+    }
   }
 
   // DELETE
   Future<void> deleteDfd(int id) async {
-    final db = await database;
-    await db.delete('dfds', where: 'id = ?', whereArgs: [id]);
+    try {
+      final db = await database;
+      await db.delete('dfds', where: 'id = ?', whereArgs: [id]);
+    } catch (e) {
+      debugPrint('Erro ao deletar DFD: $e');
+      rethrow;
+    }
   }
 }
