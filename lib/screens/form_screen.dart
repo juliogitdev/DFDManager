@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../constants/app_colors.dart';
 import '../database/database_helper.dart';
 import '../models/dfd.dart';
 
@@ -32,8 +33,8 @@ class _FormScreenState extends State<FormScreen> {
         TextEditingController(text: widget.dfd?.justificativa ?? '');
 
     if (isEditing) {
-      _dataDfd = DateFormat('dd/MM/yyyy').parse(widget.dfd!.dataDfd);
-      _dataCriacao = DateFormat('dd/MM/yyyy').parse(widget.dfd!.dataCriacao);
+      _dataDfd = DateFormat('yyyy-MM-dd').parse(widget.dfd!.dataDfd);
+      _dataCriacao = DateFormat('yyyy-MM-dd').parse(widget.dfd!.dataCriacao);
     }
   }
 
@@ -83,8 +84,8 @@ class _FormScreenState extends State<FormScreen> {
     final dfd = Dfd(
       id: widget.dfd?.id,
       codigo: _codigoCtrl.text.trim(),
-      dataDfd: _formatDate(_dataDfd),
-      dataCriacao: _formatDate(_dataCriacao),
+      dataDfd: Dfd.dateToIso(_dataDfd!),
+      dataCriacao: Dfd.dateToIso(_dataCriacao!),
       justificativa: _justificativaCtrl.text.trim(),
     );
 
@@ -110,7 +111,7 @@ class _FormScreenState extends State<FormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Editar DFD' : 'Nova DFD'),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -166,7 +167,7 @@ class _FormScreenState extends State<FormScreen> {
                 child: ElevatedButton(
                   onPressed: _salvar,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1A237E),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -207,7 +208,7 @@ class _FormScreenState extends State<FormScreen> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today, size: 18, color: Color(0xFF1A237E)),
+            const Icon(Icons.calendar_today, size: 18, color: AppColors.primary),
             const SizedBox(width: 10),
             Text(label,
                 style: TextStyle(
