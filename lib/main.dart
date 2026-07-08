@@ -1,3 +1,4 @@
+import 'constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/home_screen.dart';
@@ -15,10 +16,9 @@ class DfdApp extends StatelessWidget {
       title: 'DFD Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF1A237E),
+        colorSchemeSeed: AppColors.primary,
         useMaterial3: true,
       ),
-      // Adicione estas 3 linhas:
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale('pt', 'BR')],
       locale: const Locale('pt', 'BR'),
