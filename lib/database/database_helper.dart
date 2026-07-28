@@ -15,6 +15,8 @@ class DfdStats {
   });
 }
 
+enum DfdSort { maisRecente, maisAntiga, codigoAsc, justificativaAsc }
+
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
@@ -46,7 +48,6 @@ class DatabaseHelper {
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        // última atualização do índice no dashboard.
         if (oldVersion < 2) {
           await db.execute('ALTER TABLE dfds ADD COLUMN updatedAt TEXT');
           await db.execute(
@@ -165,6 +166,67 @@ class DatabaseHelper {
     } catch (e) {
       debugPrint('Erro ao obter estatísticas: $e');
       rethrow;
+    }
+  }
+
+  Future<List<Dfd>> queryDfds({
+    String texto = '',
+    DateTime? dataInicio,
+    DateTime? dataFim,
+    DfdSort sort = DfdSort.maisRecente,
+  }) async {
+    try {
+      final db = await database;
+
+      final where = <String>[];
+      final args = <Object?>[];
+
+      final termo = texto.trim();
+      if (termo.isNotEmpty) {
+        final escaped = termo
+            .replaceAll('\\', '\\\\')
+            .replaceAll('%', '\\%')
+            .replaceAll('_', '\\_');
+        where.add(
+          "(codigo LIKE ? ESCAPE '\\' OR justificativa LIKE ? ESCAPE '\\')",
+        );
+        args
+          ..add('%$escaped%')
+          ..add('%$escaped%');
+      }
+
+      if (dataInicio != null) {
+        where.add('dataDfd >= ?');
+        args.add(Dfd.dateToIso(dataInicio));
+      }
+      if (dataFim != null) {
+        where.add('dataDfd <= ?');
+        args.add(Dfd.dateToIso(dataFim));
+      }
+
+      final maps = await db.query(
+        'dfds',
+        where: where.isEmpty ? null : where.join(' AND '),
+        whereArgs: args.isEmpty ? null : args,
+        orderBy: _orderBy(sort),
+      );
+      return maps.map((m) => Dfd.fromMap(m)).toList();
+    } catch (e) {
+      debugPrint('Erro ao consultar DFDs: $e');
+      rethrow;
+    }
+  }
+
+  String _orderBy(DfdSort sort) {
+    switch (sort) {
+      case DfdSort.maisRecente:
+        return 'dataDfd DESC, id DESC';
+      case DfdSort.maisAntiga:
+        return 'dataDfd ASC, id ASC';
+      case DfdSort.codigoAsc:
+        return 'codigo COLLATE NOCASE ASC, id DESC';
+      case DfdSort.justificativaAsc:
+        return 'justificativa COLLATE NOCASE ASC, id DESC';
     }
   }
 }
