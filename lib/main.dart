@@ -1,7 +1,7 @@
 import 'constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'screens/home_screen.dart';
+import 'screens/dashboard_screen.dart';
 
 void main() {
   runApp(const DfdApp());
@@ -22,7 +22,7 @@ class DfdApp extends StatelessWidget {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale('pt', 'BR')],
       locale: const Locale('pt', 'BR'),
-      home: const HomeScreen(),
+      home: const DashboardScreen(),
     );
   }
 }
